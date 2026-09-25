@@ -51,6 +51,20 @@
 	const oneEachExp = $derived(mergedTotal(new Array(Math.floor(copies)).fill(5)));
 	const oneEachLevel = $derived(oneEachExp > 0 ? formatLevel(oneEachExp) : '+0');
 
+	const instruction = $derived.by(() => {
+		const moted = plan.allocation.filter((entry) => entry.motesPerCopy > 0);
+		const spare = plan.allocation.find((entry) => entry.motesPerCopy === 0);
+		const parts = moted.map((entry) => {
+			const noun = entry.copies === 1 ? 'copy' : 'copies';
+			return `mote ${entry.copies} ${noun} to +${tierForMotes(entry.motesPerCopy)}`;
+		});
+		const head = parts.length > 0 ? parts.join(' and ') : 'use no motes';
+		const sentence = head.charAt(0).toUpperCase() + head.slice(1);
+		const middle = spare ? `, leave the other ${spare.copies} at +0` : '';
+		const total = plan.copies === 1 ? 'copy' : 'copies';
+		return `${sentence}${middle}, then merge all ${plan.copies} ${total} together.`;
+	});
+
 	function targetDescription(tier: number): string {
 		const label = TIER_LABELS[tier];
 		return label ? `+${tier} (${label})` : `+${tier}`;
@@ -139,27 +153,11 @@
 		{#if preTier <= 0}
 			<p class="summary">No copies or motes needed; the Voids cover it on their own.</p>
 		{:else if plan.reached}
+			<p class="summary">{instruction}</p>
 			<p class="summary">
-				Spend <strong>{plan.motesUsed} {GRADE_NAME}</strong> across
-				<strong>{plan.allocation.filter((a) => a.motesPerCopy > 0).reduce((s, a) => s + a.copies, 0)}</strong>
-				copies and merge all {plan.copies} down. That lands at
-				<strong>{formatLevel(plan.exp)}</strong> before the Voids.
+				That reaches <strong>{formatLevel(plan.exp)}</strong> using
+				<strong>{plan.motesUsed} {GRADE_NAME}</strong> motes, before the Voids.
 			</p>
-			<h3>Mote spread</h3>
-			<table>
-				<thead>
-					<tr><th>Motes on the copy</th><th>Copies</th><th>Copy ends at</th></tr>
-				</thead>
-				<tbody>
-					{#each plan.allocation as entry (entry.motesPerCopy)}
-						<tr class:spare={entry.motesPerCopy === 0}>
-							<td>{entry.motesPerCopy}</td>
-							<td>{entry.copies}</td>
-							<td>+{tierForMotes(entry.motesPerCopy)}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
 		{:else}
 			<p class="summary">
 				{plan.copies} copies and {plan.motesUsed} {GRADE_NAME} motes top out at
@@ -228,11 +226,6 @@
 		font-size: 1.05rem;
 	}
 
-	.panel h3 {
-		margin-bottom: 0.25rem;
-		font-size: 0.95rem;
-	}
-
 	.fields {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
@@ -265,10 +258,6 @@
 		padding: 0.25rem 0.5rem;
 		border-bottom: 1px solid var(--border);
 		font-size: 0.9rem;
-	}
-
-	tr.spare {
-		color: var(--muted);
 	}
 
 	tr.current {
