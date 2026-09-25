@@ -5,6 +5,7 @@ Browser tools for EverQuest Legends. A static site built with SvelteKit and Type
 ## Tools
 
 - **Gear Upgrade** - plan the motes, duplicate merges, and Void-Touched Potential needed to take an item to a target tier (+1 through +10).
+- **Copy Pyramid** - for bulk-farm quest items, work out how many raw copies and Major motes reach a tier before Void-Touched finish it.
 
 ## Development
 
