@@ -6,8 +6,8 @@ export interface Tool {
 
 export const tools: Tool[] = [
 	{
-		name: 'Hello World',
-		href: '/hello',
-		description: 'A placeholder tool that verifies the skeleton is working.'
+		name: 'Gear Upgrade',
+		href: '/gear-upgrade',
+		description: 'Plan mote, duplicate, and Void-Touched merges to reach a target item tier.'
 	}
 ];

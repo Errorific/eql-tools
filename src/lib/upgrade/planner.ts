@@ -506,6 +506,8 @@ export function savingsFromExtraCopies(
 	upTo = 3
 ): CopySaving[] {
 	const base = solve(input, ANALYSIS_CAP);
+	const baseUses = new Map((base.plan?.moteUses ?? []).map((u) => [u.grade, u.count]));
+	const baseCost = base.plan?.cost ?? 0;
 	const results: CopySaving[] = [];
 	for (let count = 1; count <= upTo; count++) {
 		const copies = [...input.copies];
@@ -523,18 +525,17 @@ export function savingsFromExtraCopies(
 			});
 			continue;
 		}
-		const currentUses = new Map((base.plan?.moteUses ?? []).map((u) => [u.grade, u.count]));
 		const nextUses = new Map(outcome.plan.moteUses.map((u) => [u.grade, u.count]));
 		const motesSaved: MoteUse[] = [];
-		for (const grade of new Set([...currentUses.keys(), ...nextUses.keys()])) {
-			const saved = (currentUses.get(grade) ?? 0) - (nextUses.get(grade) ?? 0);
+		for (const grade of new Set([...baseUses.keys(), ...nextUses.keys()])) {
+			const saved = (baseUses.get(grade) ?? 0) - (nextUses.get(grade) ?? 0);
 			if (saved > 0) motesSaved.push({ grade, count: saved });
 		}
 		results.push({
 			tier: dropTier,
 			count,
 			cost: outcome.plan.cost,
-			costSaved: (base.plan?.cost ?? Infinity) - outcome.plan.cost,
+			costSaved: base.plan ? baseCost - outcome.plan.cost : 0,
 			motesSaved: motesSaved.sort((a, b) => a.grade - b.grade),
 			voidSaved: (base.plan?.voidCount ?? 0) - outcome.plan.voidCount,
 			reachesTarget: true

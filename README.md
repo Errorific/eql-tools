@@ -4,7 +4,7 @@ Browser tools for EverQuest Legends. A static site built with SvelteKit and Type
 
 ## Tools
 
-- **Hello World** - placeholder tool that verifies the skeleton works.
+- **Gear Upgrade** - plan the motes, duplicate merges, and Void-Touched Potential needed to take an item to a target tier (+1 through +10).
 
 ## Development
 
@@ -13,9 +13,16 @@ npm install
 npm run dev
 ```
 
+## Testing
+
+```sh
+npm test
+```
+
 ## Building
 
 ```sh
+npm run check
 npm run build
 npm run preview
 ```
